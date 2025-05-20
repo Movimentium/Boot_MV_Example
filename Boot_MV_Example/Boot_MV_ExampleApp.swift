@@ -5,9 +5,13 @@ import SwiftUI
 
 @main
 struct Boot_MV_ExampleApp: App {
+    
+    @StateObject private var storeModel = StoreModel(webService: WebService())
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(storeModel)
         }
     }
 }

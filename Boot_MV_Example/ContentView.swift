@@ -4,17 +4,34 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var storeModel: StoreModel
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        List(storeModel.products) { product in
+            VStack(alignment: .leading) {
+                Text(product.title)
+                Text(product.price as NSNumber, formatter: NumberFormatter.currency)
+                    .foregroundStyle(.blue)
+                    .font(.subheadline)
+            }
         }
-        .padding()
+        .task {
+            await populateProducts()
+        }
+    }
+    
+    // MARK: - Logic
+    // I don't like this approach...
+    private func populateProducts() async {
+        do {
+            try await storeModel.populateProducts()
+        } catch {
+            print(error)
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(StoreModel(webService: WebService()))
 }
